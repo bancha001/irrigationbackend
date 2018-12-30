@@ -99,7 +99,7 @@ public class DefaultScheduleBusiness implements ScheduleBusiness {
 
 	private JobDetail buildJobDetail(ScheduleRequest scheduleRequest) {
 		JobDataMap jobDataMap = new JobDataMap();
-		jobDataMap.put("")
+		//jobDataMap.put("")
 
 		return JobBuilder.newJob(ValveJob.class)
 				.withIdentity(UUID.randomUUID().toString(), "irrigation-jobs")
