@@ -1,0 +1,3 @@
+--liquibase formatted sql
+--changeset bancha:1
+--INSERT INTO APPUSER (Id, APPUSERSTATUS, DESCR, EMAIL, FTE, IMAGEURL, VERSION, TYPE_Id,FIRSTNAME, LASTNAME) VALUES ('FUSION', null, 'Fusion', 'fusion@sfamc.com.au', true, 'https://123.1.com', 1, 'Auth0UserType', 'Fusion', 'Merx');
