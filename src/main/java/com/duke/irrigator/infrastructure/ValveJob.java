@@ -5,6 +5,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 import org.springframework.stereotype.Component;
 
@@ -12,39 +13,22 @@ import org.springframework.stereotype.Component;
 public class ValveJob extends QuartzJobBean {
     private static final Logger logger = LoggerFactory.getLogger(ValveJob.class);
 
-//    @Autowired
-//    private JavaMailSender mailSender;
-//
-//    @Autowired
-//    private MailProperties mailProperties;
+    @Autowired
+    private BeagleBoneBlackIO beagleBoneBlackIO;
 
     @Override
     protected void executeInternal(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         logger.info("Executing Job with key {}", jobExecutionContext.getJobDetail().getKey());
 
         JobDataMap jobDataMap = jobExecutionContext.getMergedJobDataMap();
-        String subject = jobDataMap.getString("subject");
-        String body = jobDataMap.getString("body");
-        String recipientEmail = jobDataMap.getString("email");
+        int zoneId = jobDataMap.getInt("zoneId");
+        String action = jobDataMap.getString("action");
 
-        controlValve("TurnOn");
+        controlValve(zoneId,action);
     }
 
-    private void controlValve(String input) {
-            logger.info("Control Valve");
-//        try {
-//            logger.info("Sending Email to {}", toEmail);
-//            MimeMessage message = mailSender.createMimeMessage();
-//
-//            MimeMessageHelper messageHelper = new MimeMessageHelper(message, StandardCharsets.UTF_8.toString());
-//            messageHelper.setSubject(subject);
-//            messageHelper.setText(body, true);
-//            messageHelper.setFrom(fromEmail);
-//            messageHelper.setTo(toEmail);
-//
-//            mailSender.send(message);
-//        } catch (MessagingException ex) {
-//            logger.error("Failed to send email to {}", toEmail);
-//        }
+    private void controlValve(int zoneId, String action) {
+        logger.info("Control Valve Zone: "+ zoneId+ " State: "+action);
+        beagleBoneBlackIO.setPin(zoneId,action);
     }
 }

@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,11 +30,11 @@ public class DefaultScheduleBusiness implements ScheduleBusiness {
 
 	@Override
 	public ScheduleResponse createSchedule(ScheduleRequest scheduleRequest) {
-		ScheduleResponse scheduleResponse = null;
+		ScheduleResponse scheduleResponse;
 		try {
-			logger.info("createSchedule is invoked");
+			logger.info("createSchedule for zone "+scheduleRequest.getIrrigationZone()+" action "+scheduleRequest.getAction()+" At "+scheduleRequest.getDateTime());
 			JobDetail jobDetail = buildJobDetail(scheduleRequest);
-			ZonedDateTime dateTime = ZonedDateTime.of(scheduleRequest.getDateTime(), scheduleRequest.getTimeZone());
+			ZonedDateTime dateTime = ZonedDateTime.of(LocalDateTime.parse(scheduleRequest.getDateTime()), ZoneId.of(scheduleRequest.getTimeZone()));
 			Trigger trigger = buildJobTrigger(jobDetail,dateTime);
 			scheduler.scheduleJob(jobDetail, trigger);
 
@@ -49,7 +51,7 @@ public class DefaultScheduleBusiness implements ScheduleBusiness {
 
 	@Override
 	public List<ScheduleDetail> listSchedule() {
-		List<ScheduleDetail> result = new ArrayList<ScheduleDetail>();
+		List<ScheduleDetail> result = new ArrayList<>();
 		try {
 			logger.info("listSchedule is invoked");
 			for (String group : scheduler.getJobGroupNames()) {
@@ -90,7 +92,7 @@ public class DefaultScheduleBusiness implements ScheduleBusiness {
 			}
 			logger.info("deleteSchedule is done");
 		}catch(Exception e){
-			logger.error("Error deleting schedule", e);
+			logger.error("Error deleting schedule", e.toString());
 			scheduleResponse = new ScheduleResponse(false, "Error creating schedule: " + e.toString());
 		}
 
@@ -99,7 +101,8 @@ public class DefaultScheduleBusiness implements ScheduleBusiness {
 
 	private JobDetail buildJobDetail(ScheduleRequest scheduleRequest) {
 		JobDataMap jobDataMap = new JobDataMap();
-		//jobDataMap.put("")
+		jobDataMap.put("zoneId",scheduleRequest.getIrrigationZone());
+		jobDataMap.put("action",scheduleRequest.getAction());
 
 		return JobBuilder.newJob(ValveJob.class)
 				.withIdentity(UUID.randomUUID().toString(), "irrigation-jobs")
