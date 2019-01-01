@@ -41,6 +41,7 @@ public class SystemInitializer {
 			subscriber.connect(options);
 			publisher.connect(options);
 			subscriber.subscribe(reqTopic, (topic, msg) -> {
+				logger.info("IP Address : "+msg);
 				Callable<Void> target = new IPBroadcaster(publisher,resTopic);
 				target.call();
 			});
