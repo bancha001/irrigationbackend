@@ -1,8 +1,10 @@
 package com.duke.irrigation;
 
 import com.duke.irrigator.infrastructure.IPBroadcaster;
+import com.duke.irrigator.infrastructure.IPBroadcaster2;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.SpringBootConfiguration;
@@ -25,10 +27,10 @@ public class IPBroadcasterTest {
 	public void testBroadcast() throws Exception{
 
 			String publisherId = UUID.randomUUID().toString();
-			MqttClient publisher = new MqttClient("tcp://iot.eclipse.org:1883",publisherId);
+			MqttClient publisher = new MqttClient("tcp://iot.eclipse.org:1883",publisherId, new MemoryPersistence());
 
 			String subscriberId = UUID.randomUUID().toString();
-			MqttClient subscriber = new MqttClient("tcp://iot.eclipse.org:1883",subscriberId);
+			MqttClient subscriber = new MqttClient("tcp://iot.eclipse.org:1883",subscriberId,new MemoryPersistence());
 
 			MqttConnectOptions options = new MqttConnectOptions();
 			options.setAutomaticReconnect(true);

@@ -2,6 +2,7 @@ package com.duke.irrigator.infrastructure;
 
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,10 +28,10 @@ public class SystemInitializer {
 		try {
 
 			String publisherId = UUID.randomUUID().toString();
-			MqttClient publisher = new MqttClient("tcp://iot.eclipse.org:1883", publisherId);
+			MqttClient publisher = new MqttClient("tcp://iot.eclipse.org:1883", publisherId,new MemoryPersistence());
 
 			String subscriberId = UUID.randomUUID().toString();
-			MqttClient subscriber = new MqttClient("tcp://iot.eclipse.org:1883", subscriberId);
+			MqttClient subscriber = new MqttClient("tcp://iot.eclipse.org:1883", subscriberId,new MemoryPersistence());
 
 
 			MqttConnectOptions options = new MqttConnectOptions();
@@ -52,4 +53,5 @@ public class SystemInitializer {
 		}
 
 	}
+	
 }
