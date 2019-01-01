@@ -45,6 +45,7 @@ public class SystemInitializer {
 				Callable<Void> target = new IPBroadcaster(publisher,resTopic);
 				target.call();
 			});
+			logger.info("System Initializer is done successfully");
 
 		}catch(Exception e){
 			logger.error(e.toString());
