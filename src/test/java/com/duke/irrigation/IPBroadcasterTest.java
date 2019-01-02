@@ -1,7 +1,6 @@
 package com.duke.irrigation;
 
 import com.duke.irrigator.infrastructure.IPBroadcaster;
-import com.duke.irrigator.infrastructure.IPBroadcaster2;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
