@@ -4,10 +4,13 @@ import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 
 import java.net.InetAddress;
+import java.net.InterfaceAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.Enumeration;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 
@@ -29,7 +32,20 @@ public class IPBroadcaster implements Callable<Void> {
 			log.info("[I31] Client not connected.");
 			return null;
 		}
-		String localIP = InetAddress.getLocalHost().getHostAddress();
+		NetworkInterface networkInterface = NetworkInterface.getByName("eth0");
+		if(networkInterface == null){
+			networkInterface = NetworkInterface.getByName("en0");
+		}
+
+		String localIP = "";
+		List<InterfaceAddress> addressList = networkInterface.getInterfaceAddresses();
+		for(InterfaceAddress interfaceAddress: addressList){
+			if(interfaceAddress.getBroadcast() != null){
+				localIP = interfaceAddress.getAddress().getHostAddress();
+				break;
+			}
+		}
+
 		MqttMessage msg = new MqttMessage(localIP.getBytes());
 		msg.setQos(0);
 		msg.setRetained(true);
@@ -38,4 +54,29 @@ public class IPBroadcaster implements Callable<Void> {
 
 		return null;
 	}
+
+	private String getLocalIpAddress()
+	{
+		try
+		{
+			for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();)
+			{
+				NetworkInterface intf = en.nextElement();
+				for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();)
+				{
+					InetAddress inetAddress = enumIpAddr.nextElement();
+					if (!inetAddress.isLoopbackAddress())
+					{
+						return inetAddress.getHostAddress().toString();
+					}
+				}
+			}
+		}
+		catch (SocketException ex)
+		{
+
+		}
+		return null;
+	}
 }
+
